@@ -26,6 +26,15 @@ back_card_img = pygame.transform.scale(back_card_img, (172, 232))
 board_img = pygame.image.load('Assets\cribbage_board.png')
 board_img = pygame.transform.scale(board_img, (250, 700))
 
+def default_screen():
+    screen.fill(GREEN)
+    screen.blit(board_img, (1000, 0))
+    # Some misc text
+    deck_text, rect = GAME_FONT.render("Deck", BLACK)    
+    screen.blit(deck_text, (55, 250))
+    crib_text, rect = GAME_FONT.render("Crib", BLACK)    
+    screen.blit(crib_text, (250, 250))
+    
 def back_card(x,y):
     screen.blit(back_card_img, (x,y))
 
@@ -36,8 +45,7 @@ while not crashed:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             crashed = True
-
-    screen.fill(GREEN)
+    default_screen()
     back_card(x,y)
     back_card(x,y+470)
     back_card(x+100,y+470)
@@ -45,7 +53,7 @@ while not crashed:
     back_card(x+300,y+470)
     back_card(x+400,y+470)
     back_card(x+500,y+470)
-    screen.blit(board_img, (1000, 0))
+    
 
     back_card(x+180,y)
 
@@ -56,12 +64,7 @@ while not crashed:
     back_card(x+600,y+220)
     back_card(x+780,y+220)
 
-    # Some misc text
-    text_surface4, rect = GAME_FONT.render("Deck", BLACK)    
-    screen.blit(text_surface4, (55, 250))
 
-    text_surface5, rect = GAME_FONT.render("Crib", BLACK)    
-    screen.blit(text_surface5, (250, 250))
 
     # Player 1
     text_surface, rect = GAME_FONT.render("Player 1 (20)", BLUE)    
