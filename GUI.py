@@ -86,9 +86,9 @@ while not crashed:
             crashed = True
 
      #  Testing
-
-    default_screen() 
+    
     image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]
+    default_screen() 
     place_hand(image_array)
     place_player_one(back_card_img)
     place_player_two(back_card_img)
