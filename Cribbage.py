@@ -82,6 +82,10 @@ class Crib_Functions:
         card_list = card_list[:len(card_list)-1]
         response2 = requests.get("https://deckofcardsapi.com/api/deck/"+deck_ID+"/pile/"+pile_name+"score/add/?cards="+card_list)
         return json.loads(response2)
+    def reset_deck(self):
+        global deck_ID
+        response = requests.get("https://deckofcardsapi.com/api/deck/"+deck_ID+"/return/")
+        return response
 
 class final_scoring:
     def check_matching(self, pile):
@@ -94,9 +98,10 @@ class final_scoring:
 
     def check_fifteen(self, pile):
         total = 0
-        for x in pile:
-            for y in pile:
-                if x['value'] + y['value'] == 15 and x['code'] != y['code']:
+        pile_switched = self.pile_value_change(pile)
+        for x in pile_switched:
+            for y in pile_switched:
+                if int(x['value']) + int(y['value']) == 15 and x['code'] != y['code']:
                     total+=2
         return total
 
@@ -112,7 +117,16 @@ class final_scoring:
             
 
     def check_runs(self, pile):
-        pass
+        pile_switched = self.pile_value_change(pile)
+        pile_list = []
+        for x in pile_switched:
+            pile_list.insert(int(x['value']))
+        pile_list.sort()
+        total = 0
+        for x in range(0,len(pile_list)-1):
+            if pile_list[x] + 1 == pile_list[x+1]:
+                total+=1
+        return total
 
     def check_nubs(self, pile):
         if len(pile) == 2:
@@ -141,14 +155,82 @@ class final_scoring:
 
 class play_scoring:
     def check_fifteen(self, pile):
-        pass
+        length = len(pile)
+        pile_switched = self.pile_value_change(pile)
+        if length > 2:
+            if int(pile_switched[length-1]['value']) + int(pile_switched[length-2]['value']) == 15:
+                return 2
+
     def check_matching(self, pile):
-        pass
+        total_cards = 0
+        length = len(pile)
+        if length > 2:
+            for x in range(length-1, 0):
+                if pile[x]['value'] == pile[x-1]['value']:
+                    total_cards += 1
+                elif total_cards == 4:
+                    break
+                else:
+                    break
+        if total_cards == 2:
+            return 2
+        elif total_cards == 3:
+            return 6
+        elif total_cards == 4:
+            return 12
+        else:
+            return 0
+
     def check_runs(self, pile):
-        pass
-    def check_go(self, pile):
-        pass
+        pile_switched = self.pile_value_change(pile)
+        if len(pile_switched) >= 5:
+            pile_list = []
+            for x in range(len(pile_switched)-1, len(pile_switched)-6):
+                pile_list.insert(int(pile_switched['value']))
+            pile_list.sort()
+            if pile_list[0] == pile_list[1] - 1 == pile_list[2] - 2 == pile_list[3] - 3 == pile_list[4] - 4:
+                return 5
+        if len(pile_switched) >= 4:
+            pile_list = []
+            for x in range(len(pile_switched)-1, len(pile_switched)-5):
+                pile_list.insert(int(pile_switched['value']))
+            pile_list.sort()
+            if pile_list[0] == pile_list[1] - 1 == pile_list[2] - 2 == pile_list[3] - 3:
+                return 4
+        if len(pile_switched) >= 3:
+            pile_list = []
+            for x in range(len(pile_switched)-1, len(pile_switched)-6):
+                pile_list.insert(int(pile_switched['value']))
+            pile_list.sort()
+            if pile_list[0] == pile_list[1] - 1 == pile_list[2] - 2:
+                return 3
+        return 0 
+
     def check_31(self, pile):
-        pass
+        pile_switched = self.pile_value_change(pile)
+        total = 0
+        for x in pile_switched:
+            total += int(pile_switched['value'])
+        if total == 31:
+            return 2
+        else:
+            return 0
+            
     def check_all(self, pile):
-        pass
+        fifteen = self.check_fifteen(pile)
+        matching = self.check_matching(pile)
+        runs = self.check_runs(pile)
+        thirtyone = self.check_31(pile)
+        return fifteen, matching, runs, thirtyone
+
+    def pile_value_change(self, pile):
+        for x in range(0, len(pile)):
+            if pile[x]['value'] == 'ACE':
+                pile[x]['value'] = '1'
+            elif pile[x]['value'] == 'JACK':
+                pile[x]['value'] = '11'
+            elif pile[x]['value'] == 'QUEEN':
+                pile[x]['value'] = '12'
+            elif pile[x]['value'] == 'KING':
+                pile[x]['value'] = '13'
+        return pile
