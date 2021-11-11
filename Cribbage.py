@@ -88,58 +88,124 @@ class Crib_Functions:
         return response
 
 class final_scoring:
+
+    global already_paired
+    """
+    lists are in order of the methods here
+    0 - matching
+    1 - fifteen
+    2 - flush
+    3 - runs
+    4 - nobs
+    """
+    already_paired = [[],[],[],[],[]]
     def check_matching(self, pile):
-        total = 0
-        for x in pile:
-            for y in pile:
-                if x['value'] == y['value'] and x['code'] != y['code']:
-                    total+=2
-        return total
+        global already_paired
+        total_cards = 0
+        length = len(pile)
+        if length > 2:
+            for x in range(length-1, 0):
+                if pile[x]['value'] == pile[x-1]['value']:
+                    total_cards += 1
+                elif total_cards == 4:
+                    break
+                else:
+                    break
+        if total_cards == 2:
+            if [pile[length-1]['code'], pile[length-2]['code']].sort() in already_paired[0]:
+                return -1
+            else:
+                already_paired[0].append([pile[length-1]['code'], pile[length-2]['code']].sort())
+                return 2
+        elif total_cards == 3:
+            if [pile[length-1]['code'], pile[length-2]['code'], pile[length-3]['code']].sort() in already_paired[0]:
+                return -1
+            else:
+                already_paired[0].append([pile[length-1]['code'], pile[length-2]['code'], pile[length-3]['code']].sort())
+                return 6
+        elif total_cards == 4:
+            if [pile[length-1]['code'], pile[length-2]['code'], pile[length-3]['code'], pile[length-4]['code']].sort() in already_paired[0]:
+                return -1
+            else:
+                already_paired[0].append([pile[length-1]['code'], pile[length-2]['code'], pile[length-3]['code'], pile[length-4]['code']].sort())
+                return 12
+        else:
+            return 0
 
     def check_fifteen(self, pile):
+        global already_paired
         total = 0
         pile_switched = self.pile_value_change(pile)
+        card_list = []
         for x in pile_switched:
-            for y in pile_switched:
-                if int(x['value']) + int(y['value']) == 15 and x['code'] != y['code']:
-                    total+=2
-        return total
+            total += int(x['value'])
+            card_list.append(x['code'])
+        card_list.sort()
+        if total == 15:
+            if card_list in already_paired[1]:
+                return -1
+            else:
+                already_paired[1].append(card_list)
+                return 2
+        else:
+            return 0
 
     def check_flush(self, pile):
+        global already_paired
         total = 0
         if len(pile) == 4:
             if pile[0]['suit'] == pile[1]['suit'] == pile[2]['suit'] == pile[3]['suit']:
+                if [pile[0]['code'], pile[1]['code'], pile[2]['code'], pile[3]['code']].sort() in already_paired[2]:
+                    return -1
+                already_paired[2].append([pile[0]['code'], pile[1]['code'], pile[2]['code'], pile[3]['code']].sort())
                 total+=4
         elif len(pile) == 5:
             if pile[0]['suit'] == pile[1]['suit'] == pile[2]['suit'] == pile[3]['suit'] == pile[4]['suit']:
+                if [pile[0]['code'], pile[1]['code'], pile[2]['code'], pile[3]['code'], pile[4]['code']].sort() in already_paired[2]:
+                    return -1
+                already_paired[2].append([pile[0]['code'], pile[1]['code'], pile[2]['code'], pile[3]['code'], pile[4]['code']].sort())
                 total += 5
         return total
             
 
     def check_runs(self, pile):
+        global already_paired
         pile_switched = self.pile_value_change(pile)
         pile_list = []
         for x in pile_switched:
             pile_list.insert(int(x['value']))
         pile_list.sort()
         total = 0
+        card_list = []
         for x in range(0,len(pile_list)-1):
             if pile_list[x] + 1 == pile_list[x+1]:
                 total+=1
-        return total
+                card_list.append(pile_switched[x]['code'])
+        card_list.sort()
+        if total > 2:
+            if card_list in already_paired[3]:
+                return -1
+            already_paired[3].append(card_list)
+            return total
+        else:
+            return 0
 
-    def check_nubs(self, pile):
+    # make sure to require flipped card in input to this.
+    def check_nobs(self, pile):
+        global already_paired
         if len(pile) == 2:
-            if pile[0]['suit'] == pile[1]['suit']:
+            if pile[0]['suit'] == pile[1]['suit'] and (pile[0]['value'] == 'JACK' or pile[1]['value'] == 'JACK'):
+                if [pile[0]['code'], pile[1]['code']].sort() in already_paired[4]:
+                    return -1
+                already_paired.append([pile[0]['code'], pile[1]['code']].sort())
                 return 2
 
     def check_all(self, pile):
         fifteen = self.check_fifteen(pile)
         flush = self.check_flush(pile)
         matching = self.check_matching(pile)
-        nubs = self.check_nubs(pile)
         runs = self.check_runs(pile)
-        return fifteen, flush, matching, nubs, runs
+        return fifteen, flush, matching, runs
     
     def pile_value_change(self, pile):
         for x in range(0, len(pile)):
