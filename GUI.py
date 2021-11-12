@@ -2,6 +2,7 @@ import pygame
 from math import pi
 import pygame.freetype
 from pygame.locals import *
+import Cribbage
 
 pygame.init()
 
@@ -193,7 +194,7 @@ def board_scoring(player_number, points):
 
 def update_text(player_number, points):
     # Player 1
-    str_player = "Player " + player_number + ": " + points
+    str_player = "Player " + str(player_number) + ": " + str(points)
     if player_number == 1:
         x, y = 760, 30
     elif player_number == 2:
@@ -203,9 +204,8 @@ def update_text(player_number, points):
     player_text, rect = GAME_FONT.render(str_player, WHITE)    
     screen.blit(player_text, (x, y))
 
-
 def update_sum(sum):
-    str_sum = "Sum: " + sum
+    str_sum = "Sum: " + str(sum)
     sum_text, rect = GAME_FONT.render(str_sum, WHITE)    
     screen.blit(sum_text, (550, 30))
 
@@ -219,13 +219,26 @@ while not crashed:
              #   print('hi')
 
      #  Testing
+
+     # Game start
     
-    image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]
+    image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]
     
     default_screen() 
+    cf = Cribbage.Crib_Functions()
+    player_1 = Cribbage.Player("Player 1")
+    player_2 = Cribbage.Player("Player 2")
     board_scoring(2,0)
+    empty_crib()
+    player_turn(1)
+    board_scoring(0,0)
+    update_text(1, 0)
+    update_text(2, 0)
+    update_sum(0)
+    place_hand(image_array)
+    player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get_name())
+    
     '''
-    sum_text, rect = GAME_FONT.render("Sum: ", WHITE)    
     place_hand(image_array)
     place_player_one(back_card_img)
     place_player_two(back_card_img)
