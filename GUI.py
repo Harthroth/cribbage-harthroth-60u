@@ -70,9 +70,6 @@ def player_turn(player_number):
         print("Error: player_turn receives", player_number)
 
 def top_curved_arc(player, points):
-    multiplier = 1
-    if player == 1:
-        multiplier = 0.75
     if points <= 40:
         if points == 36:
             x, y = 1070, 138
@@ -100,6 +97,26 @@ def top_curved_arc(player, points):
             x, y = temp_width-1116, 95
         else:
             print("Error: " + points)
+    if player == 1:
+        return x, y
+    return (x*1.75)-846, (y*1.75)-110
+
+def bottom_curved_arc(player, points):
+    x, y = 0, 0
+    if points == 85:
+        x, y = 1106, 625
+    elif points == 84:
+        x, y = 1129, 652
+    elif points == 83:
+        x, y = 1164, 662
+    elif points == 82:
+        x, y = 1199, 652
+    elif points == 81:
+        x, y = 1222, 625
+    else:
+        print('Error', points)
+    if player == 2:
+        return (x*0.25)+875, (y*0.25) + 456
     return x, y
 
 def board_scoring(player_number, points):
@@ -107,7 +124,7 @@ def board_scoring(player_number, points):
     if player_number == 1:
         x = 1024
         if points == 0:
-            pygame.draw.circle(screen, WHITE, (1024, 638), 5)          
+            y = 625     
         elif points <= 35:
             temp = points - 1
             y -= temp * 13
@@ -119,7 +136,8 @@ def board_scoring(player_number, points):
             temp = 35 - (points - 50)
             y -= temp * 13
         elif points <= 85:
-            print("ill do this one later")
+            xy_tuple = bottom_curved_arc(1, points)
+            x, y = xy_tuple[0], xy_tuple[1]
         elif points <= 120:
             x = 1102
             temp = points - 86
@@ -130,7 +148,7 @@ def board_scoring(player_number, points):
     elif player_number == 2:
         x = 1069
         if points == 0:
-            pygame.draw.circle(screen, WHITE, (1024, 638), 5)            
+            y = 625            
         elif points <= 35:
             temp = points - 1
             y -= temp * 13
@@ -142,7 +160,8 @@ def board_scoring(player_number, points):
             temp = 35 - (points - 50)
             y -= temp * 13
         elif points <= 85:
-            print("ill do this one later")
+            xy_tuple = bottom_curved_arc(2, points)
+            x, y = xy_tuple[0], xy_tuple[1]
         elif points <= 120:
             x = 1148
             temp = points - 86
@@ -167,30 +186,16 @@ while not crashed:
     image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]
     
     default_screen() 
-
-    board_scoring(1, 45)
-    board_scoring(1, 44)
-    board_scoring(1, 43)
-    board_scoring(1, 42)
-    board_scoring(1, 41)
-    board_scoring(1, 40)
-    board_scoring(1, 39)
-    board_scoring(1, 38)
-    # + 6, - 16
-    # + 10, -14
-    # + 14, -9
+    board_scoring(2,0)
     '''
     sum_text, rect = GAME_FONT.render("Sum: ", WHITE)    
     screen.blit(sum_text, (550, 30))
-
     # Player 1
     player_1_text, rect = GAME_FONT.render("Player 1:", WHITE)    
     screen.blit(player_1_text, (760, 30))
-
     # Player 2
     player2_text, rect2 = GAME_FONT.render("Player 2:", WHITE)
     screen.blit(player2_text, (760, 60))
-
     place_hand(image_array)
     place_player_one(back_card_img)
     place_player_two(back_card_img)
