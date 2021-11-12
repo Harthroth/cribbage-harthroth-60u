@@ -1,6 +1,7 @@
 import pygame
 from math import pi
 import pygame.freetype
+from pygame.locals import *
 
 pygame.init()
 
@@ -29,6 +30,17 @@ board_img = pygame.transform.scale(board_img, (250, 700))
 empty_img = pygame.image.load('Assets\Empty.png')
 empty_img = pygame.transform.scale(empty_img, (156, 156))
 
+# Mouse functionality 
+'''
+To test if if the mouse position collides with the image, you need to have a Rect that describes the images position. So, if you redefine your singleplayer_position...
+singleplayer_position = Rect(350, 200, 100, 100) # Width/height of 100 pixels.
+# You can now use this variable for Rect methods, such as collidepoint.
+singleplayer_position.collidepoint(mouse_pos)
+# Note: To have your Rect accurately represent the picture you load..
+singleplayer_position = singleplayer_image.get_rect()
+# This defaults to the top left, but it has the correct width/height now. Lets move it to where you wanted it.
+singleplayer_position = singleplayer_position.move(350, 200)
+'''
 # Paints the default game screen
 
 def default_screen():
@@ -42,6 +54,9 @@ def default_screen():
     crib_text, rect = GAME_FONT.render("Crib", WHITE)    
     screen.blit(crib_text, (250, 250))
     screen.blit(back_card_img, (190, 10))
+
+def upcard_deck(img):
+    screen.blit(img, (10, 10))
 
 def place_hand(image_array):
     x, y = 10, 470
@@ -176,10 +191,32 @@ def board_scoring(player_number, points):
         pygame.draw.circle(screen, WHITE, (1069, 625), 5)
         pygame.draw.circle(screen, WHITE, (1069, 638), 5)
 
+def update_text(player_number, points):
+    # Player 1
+    str_player = "Player " + player_number + ": " + points
+    if player_number == 1:
+        x, y = 760, 30
+    elif player_number == 2:
+        x, y = 760, 60
+    else:
+        pass
+    player_text, rect = GAME_FONT.render(str_player, WHITE)    
+    screen.blit(player_text, (x, y))
+
+
+def update_sum(sum):
+    str_sum = "Sum: " + sum
+    sum_text, rect = GAME_FONT.render(str_sum, WHITE)    
+    screen.blit(sum_text, (550, 30))
+
 while not crashed:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             crashed = True
+        elif event.type == MOUSEBUTTONDOWN:
+            mouse_pos = event.pos # Now it will have the coordinates of click point.
+            #if singleplayer_position.collidepoint(mouse_pos):
+             #   print('hi')
 
      #  Testing
     
@@ -189,13 +226,6 @@ while not crashed:
     board_scoring(2,0)
     '''
     sum_text, rect = GAME_FONT.render("Sum: ", WHITE)    
-    screen.blit(sum_text, (550, 30))
-    # Player 1
-    player_1_text, rect = GAME_FONT.render("Player 1:", WHITE)    
-    screen.blit(player_1_text, (760, 30))
-    # Player 2
-    player2_text, rect2 = GAME_FONT.render("Player 2:", WHITE)
-    screen.blit(player2_text, (760, 60))
     place_hand(image_array)
     place_player_one(back_card_img)
     place_player_two(back_card_img)
