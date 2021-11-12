@@ -19,7 +19,6 @@ WHITE = (255,255,255)
 GREEN = (62, 126, 94)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-TEST_COLOR = (199,36,177)
 
 # Loading and editing assets
 
