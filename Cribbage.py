@@ -1,6 +1,18 @@
 import requests 
 import json
 
+def pile_value_change(pile):
+        for x in range(0, len(pile)):
+            if pile[x]['value'] == 'ACE':
+                pile[x]['value'] = '1'
+            elif pile[x]['value'] == 'JACK':
+                pile[x]['value'] = '11'
+            elif pile[x]['value'] == 'QUEEN':
+                pile[x]['value'] = '12'
+            elif pile[x]['value'] == 'KING':
+                pile[x]['value'] = '13'
+        return pile
+
 class Player:
     global score
     global name
@@ -82,6 +94,20 @@ class Crib_Functions:
         card_list = card_list[:len(card_list)-1]
         response2 = requests.get("https://deckofcardsapi.com/api/deck/"+deck_ID+"/pile/"+pile_name+"score/add/?cards="+card_list)
         return json.loads(response2)
+    
+    def get_pile_list(self, pile_name):
+        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID()+"/pile/"+pile_name+"/list/")
+        return response
+
+    def get_sum_of_cards(self, pile_name):
+        cards = self.get_pile_list(pile_name)
+        card_list = cards["piles"][pile_name]["cards"]
+        fixed_card_list = pile_value_change(card_list)
+        sum = 0
+        for x in fixed_card_list:
+            sum += int(x["value"])
+        return sum
+
     def reset_deck(self):
         global deck_ID
         response = requests.get("https://deckofcardsapi.com/api/deck/"+deck_ID+"/return/")
@@ -135,7 +161,7 @@ class final_scoring:
     def check_fifteen(self, pile):
         global already_paired
         total = 0
-        pile_switched = self.pile_value_change(pile)
+        pile_switched = pile_value_change(pile)
         card_list = []
         for x in pile_switched:
             total += int(x['value'])
@@ -170,7 +196,7 @@ class final_scoring:
 
     def check_runs(self, pile):
         global already_paired
-        pile_switched = self.pile_value_change(pile)
+        pile_switched = pile_value_change(pile)
         pile_list = []
         for x in pile_switched:
             pile_list.insert(int(x['value']))
@@ -206,18 +232,6 @@ class final_scoring:
         matching = self.check_matching(pile)
         runs = self.check_runs(pile)
         return fifteen, flush, matching, runs
-    
-    def pile_value_change(self, pile):
-        for x in range(0, len(pile)):
-            if pile[x]['value'] == 'ACE':
-                pile[x]['value'] = '1'
-            elif pile[x]['value'] == 'JACK':
-                pile[x]['value'] = '11'
-            elif pile[x]['value'] == 'QUEEN':
-                pile[x]['value'] = '12'
-            elif pile[x]['value'] == 'KING':
-                pile[x]['value'] = '13'
-        return pile
 
 class play_scoring:
     def check_fifteen(self, pile):
@@ -248,7 +262,7 @@ class play_scoring:
             return 0
 
     def check_runs(self, pile):
-        pile_switched = self.pile_value_change(pile)
+        pile_switched = pile_value_change(pile)
         if len(pile_switched) >= 5:
             pile_list = []
             for x in range(len(pile_switched)-1, len(pile_switched)-6):
@@ -273,7 +287,7 @@ class play_scoring:
         return 0 
 
     def check_31(self, pile):
-        pile_switched = self.pile_value_change(pile)
+        pile_switched = pile_value_change(pile)
         total = 0
         for x in pile_switched:
             total += int(pile_switched['value'])
@@ -289,14 +303,3 @@ class play_scoring:
         thirtyone = self.check_31(pile)
         return fifteen, matching, runs, thirtyone
 
-    def pile_value_change(self, pile):
-        for x in range(0, len(pile)):
-            if pile[x]['value'] == 'ACE':
-                pile[x]['value'] = '1'
-            elif pile[x]['value'] == 'JACK':
-                pile[x]['value'] = '11'
-            elif pile[x]['value'] == 'QUEEN':
-                pile[x]['value'] = '12'
-            elif pile[x]['value'] == 'KING':
-                pile[x]['value'] = '13'
-        return pile
