@@ -17,6 +17,7 @@ Each player begins the round with six cards, the game determines a starting "dea
  - Pairs - 2 points each
  - Three of a Kind - 6 points
  - Four of a Kind - 12 points
+ - Nobs - Jack having the same suit as the flipped card - 2 points
 
 Here are some interesting card combinations
 
