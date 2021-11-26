@@ -14,29 +14,23 @@ def pile_value_change(pile):
         return pile
 
 class Player:
-    global score
-    global name
+    score = 0
+    name = ""
     def __init__(self, n) -> None:
-        global score
-        global name
-        name = n
-        score = 0
+        self.name = n.replace(' ', '_')
+        self.score = 0
 
     def increase_score(self, new_score):
-        global score
-        score += new_score
+        self.score += new_score
     
     def reset_score(self):
-        global score
-        score = 0
+        self.score = 0
 
     def get_score(self):
-        global score
-        return score
+        return self.score
     
     def get_name(self):
-        global name
-        return name
+        return self.name
 
 
 class Crib_Functions:
@@ -55,28 +49,39 @@ class Crib_Functions:
 # Deals out 6 cards and creates 2 piles ID'd by the player's names
     def deal_cards(self, player1name, player2name):
         global deck_ID
-        response1 = requests.get("https://deckofcardsapi.com/api/deck/"+deck_ID+"/pile/"+player1name+"/add/?count=6")
-        response2 = requests.get("https://deckofcardsapi.com/api/deck/"+deck_ID+"/pile/"+player2name+"/add/?count=6")
+        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID()+"/draw/?count=12")
+        card_list = []
+        card1 = ''
+        card2 = ''
+        for x in response.json()['cards']:
+            card_list.append(x['code'])
+        for x in range(0,12):
+            if x < 6:
+                card1+=str(card_list[x])+','
+            else: 
+                card2+=str(card_list[x])+','
+        response1 = requests.get("https://deckofcardsapi.com/api/deck/"+deck_ID+"/pile/"+player1name+"/add/?cards="+str(card1))
+        response2 = requests.get("https://deckofcardsapi.com/api/deck/"+deck_ID+"/pile/"+player2name+"/add/?cards="+str(card2))
         return response1.json(), response2.json()
 
 # Creates the crib pile out of 4 cards contributed by the players
     def make_crib(self, list_of_cards):
-        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID+"/pile/crib/add/?cards="+list_of_cards)
+        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID()+"/pile/crib/add/?cards="+list_of_cards)
         return response.json()
     
 # Draws a card from a specific pile
     def draw_card_from_pile(self, pile_name):
-        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID+"/pile/"+pile_name+"/draw/?count=1")
+        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID()+"/pile/"+pile_name+"/draw/?count=1")
         return response.json()
 
 # Draws a specific card from a specific pile
     def draw_specific_card_from_pile(self, pile_name, card_name):
-        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID+"/pile/"+pile_name+"/draw/?cards="+card_name)
+        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID()+"/pile/"+pile_name+"/draw/?cards="+card_name)
         return response.json()
 
 # Draws a card from the deck (for top card or turn determination at beginning)
     def draw_card_from_deck(self):
-        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID+"/draw/?count=1")
+        response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID()+"/draw/?count=1")
         return response.json()
 
 # For round play, placing cards in play pile - pile_nameplay
