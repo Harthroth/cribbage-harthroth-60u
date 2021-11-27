@@ -20,6 +20,8 @@ GREEN = (62, 126, 94)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
+clicking = False
+
 # Loading and editing assets
 
 GAME_FONT = pygame.freetype.Font('Assets\COMIC.TTF', 24)
@@ -208,34 +210,51 @@ def update_sum(sum):
     sum_text, rect = GAME_FONT.render(str_sum, WHITE)    
     screen.blit(sum_text, (550, 30))
 
+mx, my = pygame.mouse.get_pos()
+loc = [mx, my]
+
+# Default Game
+current_player = -1
+image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]    
+cf = Cribbage.Crib_Functions()
+player_1 = Cribbage.Player("Player 1")
+player_2 = Cribbage.Player("Player 2")
+
+default_screen() 
+board_scoring(0,0)
+empty_crib()
+player_turn(1)
+update_text(1, player_1.get_score())
+update_text(2, player_2.get_score())
+update_sum(0)
+place_hand(image_array)
+player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get_name())
+
+print(player_1_cards)
+
 while not crashed:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             crashed = True
         elif event.type == MOUSEBUTTONDOWN:
-            mouse_pos = event.pos # Now it will have the coordinates of click point.
-            #if singleplayer_position.collidepoint(mouse_pos):
-             #   print('hi')
-
+            if event.type == MOUSEBUTTONDOWN: 
+                if event.button == 1: 
+                    clicking == True 
+                    print(loc) 
+                else: 
+                    pass 
+                '''
+    if current_player == 1:
+        place_hand(player_1_cards)
+    elif current_player == 2:
+        place_hand(player_2_cards)
+    elif current_player == 3:
+        current_player = 0
+    current_player += 1'''
      #  Testing
 
      # Game start
     
-    image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]
-    
-    default_screen() 
-    cf = Cribbage.Crib_Functions()
-    player_1 = Cribbage.Player("Player 1")
-    player_2 = Cribbage.Player("Player 2")
-    board_scoring(2,0)
-    empty_crib()
-    player_turn(1)
-    board_scoring(0,0)
-    update_text(1, 0)
-    update_text(2, 0)
-    update_sum(0)
-    place_hand(image_array)
-    player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get_name())
     
     '''
     place_hand(image_array)
