@@ -102,7 +102,7 @@ class Crib_Functions:
     
     def get_pile_list(self, pile_name):
         response = requests.get("https://deckofcardsapi.com/api/deck/"+self.get_deck_ID()+"/pile/"+pile_name+"/list/")
-        return response
+        return response.json()
 
     def get_sum_of_cards(self, pile_name):
         cards = self.get_pile_list(pile_name)
@@ -116,7 +116,7 @@ class Crib_Functions:
     def reset_deck(self):
         global deck_ID
         response = requests.get("https://deckofcardsapi.com/api/deck/"+deck_ID+"/return/")
-        return response
+        return response.json()
 
 class final_scoring:
 
