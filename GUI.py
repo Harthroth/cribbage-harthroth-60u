@@ -217,8 +217,9 @@ update_text(2, player_2.get_score())
 update_sum(0)
 place_hand(image_array)
 player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get_name())
-cards = self.get_pile_list(pile_name) 
-card_list = cards["piles"][pile_name]["cards"]
+cards = cf.get_pile_list(player_1.get_name())
+card_list = cards["piles"][player_1.get_name()]["cards"]
+print(card_list)
 first = second = third = fourth = fifth = sixth = crib_use =  True
 print(player_1_cards)
 
