@@ -220,8 +220,8 @@ player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get
 cards = cf.get_pile_list(player_1.get_name())
 card_list = cards["piles"][player_1.get_name()]["cards"]
 print(card_list)
+
 first = second = third = fourth = fifth = sixth = crib_use =  True
-print(player_1_cards)
 
 while not crashed:
     for event in pygame.event.get():
@@ -241,18 +241,17 @@ while not crashed:
                         # update scoring
                     elif my > 475 and my < 702:
                         if  mx > 14 and mx < 114:
-
                             print("First card")
                         elif mx > 114 and mx < 214:
-                            print("second card")
+                            print("Second card")
                         elif mx > 214 and mx < 310:
-                            print("third card")
+                            print("Third card")
                         elif mx > 310 and mx < 410:
-                            print("fourth card")
+                            print("Fourth card")
                         elif mx > 410 and mx < 508:
-                            print("fifth card")
+                            print("Fifth card")
                         elif mx > 508 and mx < 680:
-                            print("sixth card")
+                            print("Sixth card")
                         else:
                             pass
                 else: 
