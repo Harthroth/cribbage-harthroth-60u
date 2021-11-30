@@ -32,17 +32,6 @@ board_img = pygame.transform.scale(board_img, (250, 700))
 empty_img = pygame.image.load('Assets\Empty.png')
 empty_img = pygame.transform.scale(empty_img, (156, 156))
 
-# Mouse functionality 
-'''
-To test if if the mouse position collides with the image, you need to have a Rect that describes the images position. So, if you redefine your singleplayer_position...
-singleplayer_position = Rect(350, 200, 100, 100) # Width/height of 100 pixels.
-# You can now use this variable for Rect methods, such as collidepoint.
-singleplayer_position.collidepoint(mouse_pos)
-# Note: To have your Rect accurately represent the picture you load..
-singleplayer_position = singleplayer_image.get_rect()
-# This defaults to the top left, but it has the correct width/height now. Lets move it to where you wanted it.
-singleplayer_position = singleplayer_position.move(350, 200)
-'''
 # Paints the default game screen
 
 def default_screen():
@@ -210,12 +199,11 @@ def update_sum(sum):
     sum_text, rect = GAME_FONT.render(str_sum, WHITE)    
     screen.blit(sum_text, (550, 30))
 
-mx, my = pygame.mouse.get_pos()
-loc = [mx, my]
+
 
 # Default Game
 current_player = -1
-image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]    
+image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]    
 cf = Cribbage.Crib_Functions()
 player_1 = Cribbage.Player("Player 1")
 player_2 = Cribbage.Player("Player 2")
@@ -229,7 +217,9 @@ update_text(2, player_2.get_score())
 update_sum(0)
 place_hand(image_array)
 player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get_name())
-
+cards = self.get_pile_list(pile_name) 
+card_list = cards["piles"][pile_name]["cards"]
+first = second = third = fourth = fifth = sixth = crib_use =  True
 print(player_1_cards)
 
 while not crashed:
@@ -238,34 +228,44 @@ while not crashed:
             crashed = True
         elif event.type == MOUSEBUTTONDOWN:
             if event.type == MOUSEBUTTONDOWN: 
+                mx, my = pygame.mouse.get_pos()
+                loc = [mx, my]
                 if event.button == 1: 
                     clicking == True 
                     print(loc) 
+                    if mx > 10 and mx < 175 and my > 10 and my < 240:
+                        pygame.draw.circle(screen, RED, (100, 250), 20)
+                        # flip deck
+                        # upcard_deck(img)
+                        # update scoring
+                    elif my > 475 and my < 702:
+                        if  mx > 14 and mx < 114:
+
+                            print("First card")
+                        elif mx > 114 and mx < 214:
+                            print("second card")
+                        elif mx > 214 and mx < 310:
+                            print("third card")
+                        elif mx > 310 and mx < 410:
+                            print("fourth card")
+                        elif mx > 410 and mx < 508:
+                            print("fifth card")
+                        elif mx > 508 and mx < 680:
+                            print("sixth card")
+                        else:
+                            pass
                 else: 
                     pass 
-                '''
-    if current_player == 1:
-        place_hand(player_1_cards)
-    elif current_player == 2:
-        place_hand(player_2_cards)
-    elif current_player == 3:
-        current_player = 0
-    current_player += 1'''
-     #  Testing
-
-     # Game start
-    
-    
-    '''
-    place_hand(image_array)
-    place_player_one(back_card_img)
-    place_player_two(back_card_img)
-    empty_crib()
-    player_turn(1)
-    player_turn(2)
-    board_scoring(0,0)
-    '''
+        if current_player == 1:
+            place_hand(player_1_cards)
+        elif current_player == 2:
+            place_hand(player_2_cards)
+        elif current_player == 3:
+            current_player = 0
+        current_player += 1
     pygame.display.update()
+
+
 
 pygame.quit()
 quit()
