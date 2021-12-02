@@ -3,7 +3,8 @@ from math import pi
 import pygame.freetype
 from pygame.locals import *
 import Cribbage
-import urllib
+from urllib.request import urlopen
+import io
 
 pygame.init()
 
@@ -222,15 +223,15 @@ cards = cf.get_pile_list(player_1.get_name())
 card_list = cards["piles"][player_1.get_name()]["cards"]
 image_array = []
 count = 0
-'''
+
 for val in card_list:
     url = str(val['images']['png'])
-    resource = urllib.urlopen(url)
-    output = open("file01.jpg","wb")
-    output.write(resource.read())
-    output.close()
-'''
-
+    print(url)
+    image_url = urlopen(url).read()
+    print(image_url)
+    image_file = io.BytesIO(image_url)
+    image_hand = pygame.image.load(image_file)
+    image_array.append[image_hand]
 
 first = second = third = fourth = fifth = sixth = crib_use =  True
 
