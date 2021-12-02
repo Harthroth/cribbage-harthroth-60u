@@ -221,9 +221,9 @@ place_hand(image_array)
 player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get_name())
 cards = cf.get_pile_list(player_1.get_name())
 card_list = cards["piles"][player_1.get_name()]["cards"]
-image_array = []
+# image_array = []
 count = 0
-
+'''
 for val in card_list:
     url = str(val['images']['png'])
     print(url)
@@ -232,7 +232,7 @@ for val in card_list:
     image_file = io.BytesIO(image_url)
     image_hand = pygame.image.load(image_file)
     image_array.append[image_hand]
-
+'''
 first = second = third = fourth = fifth = sixth = crib_use =  True
 
 while not crashed:
