@@ -3,6 +3,7 @@ from math import pi
 import pygame.freetype
 from pygame.locals import *
 import Cribbage
+import urllib
 
 pygame.init()
 
@@ -219,7 +220,17 @@ place_hand(image_array)
 player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get_name())
 cards = cf.get_pile_list(player_1.get_name())
 card_list = cards["piles"][player_1.get_name()]["cards"]
-print(card_list)
+image_array = []
+count = 0
+'''
+for val in card_list:
+    url = str(val['images']['png'])
+    resource = urllib.urlopen(url)
+    output = open("file01.jpg","wb")
+    output.write(resource.read())
+    output.close()
+'''
+
 
 first = second = third = fourth = fifth = sixth = crib_use =  True
 
@@ -256,6 +267,7 @@ while not crashed:
                             pass
                 else: 
                     pass 
+                '''
         if current_player == 1:
             place_hand(player_1_cards)
         elif current_player == 2:
@@ -263,6 +275,7 @@ while not crashed:
         elif current_player == 3:
             current_player = 0
         current_player += 1
+        '''
     pygame.display.update()
 
 
