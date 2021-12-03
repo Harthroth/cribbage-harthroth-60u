@@ -5,6 +5,7 @@ from pygame.locals import *
 import Cribbage
 from urllib.request import urlopen
 import io
+import requests
 
 pygame.init()
 
@@ -26,12 +27,12 @@ clicking = False
 
 # Loading and editing assets
 
-GAME_FONT = pygame.freetype.Font('Assets\COMIC.TTF', 24)
-back_card_img = pygame.image.load('Assets\card_back.png')
+GAME_FONT = pygame.freetype.Font('cribbage-harthroth-60u-main\Assets\COMIC.TTF', 24)
+back_card_img = pygame.image.load('cribbage-harthroth-60u-main\Assets\card_back.png')
 back_card_img = pygame.transform.scale(back_card_img, (172, 232))
-board_img = pygame.image.load('Assets\cribbage_board.png')
+board_img = pygame.image.load('cribbage-harthroth-60u-main\Assets\cribbage_board.png')
 board_img = pygame.transform.scale(board_img, (250, 700))
-empty_img = pygame.image.load('Assets\Empty.png')
+empty_img = pygame.image.load('cribbage-harthroth-60u-main\Assets\Empty.png')
 empty_img = pygame.transform.scale(empty_img, (156, 156))
 
 # Paints the default game screen
@@ -221,18 +222,16 @@ place_hand(image_array)
 player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get_name())
 cards = cf.get_pile_list(player_1.get_name())
 card_list = cards["piles"][player_1.get_name()]["cards"]
-# image_array = []
+image_array = []
 count = 0
-'''
+
 for val in card_list:
     url = str(val['images']['png'])
-    print(url)
-    image_url = urlopen(url).read()
-    print(image_url)
-    image_file = io.BytesIO(image_url)
+    r = requests.get(url)
+    image_file = io.BytesIO(r.content)
     image_hand = pygame.image.load(image_file)
-    image_array.append[image_hand]
-'''
+    image_array.append(image_hand)
+
 first = second = third = fourth = fifth = sixth = crib_use =  True
 
 while not crashed:
@@ -268,15 +267,15 @@ while not crashed:
                             pass
                 else: 
                     pass 
-                '''
+                
         if current_player == 1:
-            place_hand(player_1_cards)
+            place_hand(image_array)
         elif current_player == 2:
-            place_hand(player_2_cards)
+            place_hand(image_array)
         elif current_player == 3:
             current_player = 0
         current_player += 1
-        '''
+    
     pygame.display.update()
 
 
