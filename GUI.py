@@ -230,6 +230,7 @@ for val in card_list:
     r = requests.get(url)
     image_file = io.BytesIO(r.content)
     image_hand = pygame.image.load(image_file)
+    image_hand = pygame.transform.scale(image_hand, (172, 232))
     image_array.append(image_hand)
 
 first = second = third = fourth = fifth = sixth = crib_use =  True
@@ -246,7 +247,7 @@ while not crashed:
                     clicking == True 
                     print(loc) 
                     if mx > 10 and mx < 175 and my > 10 and my < 240:
-                        pygame.draw.circle(screen, RED, (100, 250), 20)
+                        cut_deck(image_array[3])
                         # flip deck
                         # upcard_deck(img)
                         # update scoring
