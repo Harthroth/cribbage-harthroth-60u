@@ -288,6 +288,7 @@ while not crashed:
                     print(loc) 
                     
                     if mx > 10 and mx < 175 and my > 10 and my < 240:
+                        current_player -= 1 
                         cut_deck(array_two[2])
                         # flip deck
                         # upcard_deck(img)
@@ -310,8 +311,6 @@ while not crashed:
                 else: 
                     pass 
     pygame.display.update()
-
-
 
 pygame.quit()
 quit()
