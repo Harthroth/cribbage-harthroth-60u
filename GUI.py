@@ -353,7 +353,7 @@ while not crashed:
                 elif player_1.get_score() < player_2.get_score():
                     round_winner("Player 2")
                 else:
-                    round_winner("Player 1 & 2")
+                    round_winner("TIE!!!")
     pygame.display.update()
 
 
