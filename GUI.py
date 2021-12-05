@@ -27,12 +27,19 @@ clicking = False
 
 # Loading and editing assets
 
-GAME_FONT = pygame.freetype.Font('cribbage-harthroth-60u-main\Assets\COMIC.TTF', 24)
-back_card_img = pygame.image.load('cribbage-harthroth-60u-main\Assets\card_back.png')
+try:
+    GAME_FONT = pygame.freetype.Font('cribbage-harthroth-60u-main\Assets\COMIC.TTF', 24)
+    back_card_img = pygame.image.load('cribbage-harthroth-60u-main\Assets\card_back.png')
+    board_img = pygame.image.load('cribbage-harthroth-60u-main\Assets\cribbage_board.png')
+    empty_img = pygame.image.load('cribbage-harthroth-60u-main\Assets\Empty.png')
+except:
+    GAME_FONT = pygame.freetype.Font('Assets\COMIC.TTF', 24)
+    back_card_img = pygame.image.load('Assets\card_back.png')
+    board_img = pygame.image.load('Assets\cribbage_board.png')
+    empty_img = pygame.image.load('Assets\Empty.png')
+
 back_card_img = pygame.transform.scale(back_card_img, (172, 232))
-board_img = pygame.image.load('cribbage-harthroth-60u-main\Assets\cribbage_board.png')
 board_img = pygame.transform.scale(board_img, (250, 700))
-empty_img = pygame.image.load('cribbage-harthroth-60u-main\Assets\Empty.png')
 empty_img = pygame.transform.scale(empty_img, (156, 156))
 
 # Paints the default game screen
@@ -202,10 +209,8 @@ def update_sum(sum):
     sum_text, rect = GAME_FONT.render(str_sum, WHITE)    
     screen.blit(sum_text, (550, 30))
 
-
-
 # Default Game
-current_player = -1
+current_player = 1
 image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]    
 cf = Cribbage.Crib_Functions()
 player_1 = Cribbage.Player("Player 1")
@@ -220,34 +225,70 @@ update_text(2, player_2.get_score())
 update_sum(0)
 place_hand(image_array)
 player_1_cards, player_2_cards = cf.deal_cards(player_1.get_name(), player_2.get_name())
-cards = cf.get_pile_list(player_1.get_name())
-card_list = cards["piles"][player_1.get_name()]["cards"]
-image_array = []
+
 count = 0
 
-for val in card_list:
-    url = str(val['images']['png'])
-    r = requests.get(url)
-    image_file = io.BytesIO(r.content)
-    image_hand = pygame.image.load(image_file)
-    image_hand = pygame.transform.scale(image_hand, (172, 232))
-    image_array.append(image_hand)
+def get_player_images(player_number):
+    image_array = []
+    if player_number == 1:
+        cards = cf.get_pile_list(player_1.get_name())
+        card_list = cards["piles"][player_1.get_name()]["cards"]
+    else:
+        cards = cf.get_pile_list(player_2.get_name())
+        card_list = cards["piles"][player_2.get_name()]["cards"]
+    for val in card_list:
+        url = str(val['images']['png'])
+        r = requests.get(url)
+        image_file = io.BytesIO(r.content)
+        image_hand = pygame.image.load(image_file)
+        image_hand = pygame.transform.scale(image_hand, (172, 232))
+        image_array.append(image_hand)
+    return image_array
 
 first = second = third = fourth = fifth = sixth = crib_use =  True
+array_one = get_player_images(1)
+array_two = get_player_images(2)
 
 while not crashed:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             crashed = True
         elif event.type == MOUSEBUTTONDOWN:
+            default_screen()
+            if current_player%2 == 0:
+                if current_player < 3:
+                    board_scoring(0, 0)
+                else:
+                    board_scoring(1, player_1.get_score())
+                    board_scoring(2, player_2.get_score())
+                place_hand(array_two)
+                player_turn(2)
+                update_text(1, player_1.get_score())
+                update_text(2, player_2.get_score())
+                update_sum(0)
+            else:
+                if current_player < 3:
+                    board_scoring(0, 0)
+                else:
+                    board_scoring(1, player_1.get_score())
+                    board_scoring(2, player_2.get_score())
+                place_hand(array_one)
+                player_turn(1)
+                update_text(1, player_1.get_score())
+                update_text(2, player_2.get_score())
+                # board_scoring(1, player_1.get_score())
+                # board_scoring(2, player_2.get_score())
+                update_sum(0)
+            current_player += 1
             if event.type == MOUSEBUTTONDOWN: 
                 mx, my = pygame.mouse.get_pos()
                 loc = [mx, my]
                 if event.button == 1: 
                     clicking == True 
                     print(loc) 
+                    
                     if mx > 10 and mx < 175 and my > 10 and my < 240:
-                        cut_deck(image_array[3])
+                        cut_deck(array_two[2])
                         # flip deck
                         # upcard_deck(img)
                         # update scoring
@@ -268,15 +309,6 @@ while not crashed:
                             pass
                 else: 
                     pass 
-                
-        if current_player == 1:
-            place_hand(image_array)
-        elif current_player == 2:
-            place_hand(image_array)
-        elif current_player == 3:
-            current_player = 0
-        current_player += 1
-    
     pygame.display.update()
 
 
