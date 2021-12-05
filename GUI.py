@@ -43,6 +43,10 @@ board_img = pygame.transform.scale(board_img, (250, 700))
 empty_img = pygame.transform.scale(empty_img, (156, 156))
 
 # Paints the default game screen
+def round_winner(name):
+    screen.fill(BLACK)
+    win_text, x = GAME_FONT.render("Round Winner: "+ name + "!", WHITE)    
+    screen.blit(win_text, (display_width/2.5, display_height/2 - 50))
 
 def default_screen():
     screen.fill(GREEN)
@@ -233,27 +237,38 @@ count = 0
 
 def get_player_images(player_number):
     image_array = []
+    value_array = []
     if player_number == 1:
         cards = cf.get_pile_list(player_1.get_name())
         card_list = cards["piles"][player_1.get_name()]["cards"]
     else:
         cards = cf.get_pile_list(player_2.get_name())
         card_list = cards["piles"][player_2.get_name()]["cards"]
+
+
     for val in card_list:
+        number = str(val['value'])
         url = str(val['images']['png'])
         r = requests.get(url)
         image_file = io.BytesIO(r.content)
         image_hand = pygame.image.load(image_file)
         image_hand = pygame.transform.scale(image_hand, (172, 232))
         image_array.append(image_hand)
-    return image_array
+        try: 
+            value_array.append(int(number))
+        except:
+            value_array.append(10)
+    return image_array, value_array
+
 
 first = second = third = fourth = fifth = sixth = crib_use =  True
-array_one = get_player_images(1)
-array_two = get_player_images(2)
+array_one, one_val = get_player_images(1)
+array_two, two_val = get_player_images(2)
+
 
 current_player = 0
 crib_img = []
+total_sum = 0
 
 while not crashed:
     for event in pygame.event.get():
@@ -268,32 +283,27 @@ while not crashed:
             place_hand(array_one)
             update_text(1, player_1.get_score())
             update_text(2, player_2.get_score())
+            print(player_1.get_score())
             # board_scoring(1, player_1.get_score())
             # board_scoring(2, player_2.get_score())
-            update_sum(0)
             if current_player == 0:
                 player_turn(1)
                 empty_crib() 
                 cut_deck(array_one[2])
                 current_player+=1
-            elif current_player > 0:
-                if my > 475 and my < 702:
+            elif current_player > 0 and total_sum <= 31:
+                if my > 475 and my < 702 and first:
                     if  mx > 14 and mx < 114:
-                            number = 0
-                    elif mx > 114 and mx < 214:
-                        print("Second card")
+                        number = 0
+                    elif mx > 114 and mx < 214 and second:
                         number = 1
-                    elif mx > 214 and mx < 310:
-                        print("Third card")
+                    elif mx > 214 and mx < 310 and third:
                         number = 2
-                    elif mx > 310 and mx < 410:
-                        print("Fourth card")
+                    elif mx > 310 and mx < 410 and fourth:
                         number = 3
-                    elif mx > 410 and mx < 508:
-                        print("Fifth card")
+                    elif mx > 410 and mx < 508 and fifth:
                         number = 4
-                    elif mx > 508 and mx < 680:
-                        print("Sixth card")
+                    elif mx > 508 and mx < 680 and sixth:
                         number = 5
                     # crib play
                     if current_player <= 4:
@@ -315,19 +325,38 @@ while not crashed:
                     else:
                         if current_player % 2 == 0:
                             player_turn(2)
-                            crib_img.append(array_two[number])
+                            place_player_two(array_two[number])
                             array_two[number] = ''
                             array_two.remove('')
+                            player_2.increase_score(player_2.get_score() + int((two_val[number]/3)))
+                            total_sum+=two_val[number]
+                            try:
+                                two_val.remove(number)
+                            except:
+                                pass
                         else:
                             player_turn(1)
-                            crib_img.append(array_one[number])
                             place_player_one(array_one[number])
                             array_one[number] = ''
                             array_one.remove('')
-                    current_player+=1     
+                            player_1.increase_score(player_1.get_score() + int((one_val[number]/3)))
+                            total_sum+=one_val[number]
+                            try:
+                                one_val.remove(number)
+                            except:
+                                pass
+                    update_sum(total_sum)
+                    current_player+=1
             else:
-                pass      
+                if player_1.get_score() > player_2.get_score():
+                    round_winner("Player 1")
+                elif player_1.get_score() < player_2.get_score():
+                    round_winner("Player 2")
+                else:
+                    round_winner("Player 1 & 2")
     pygame.display.update()
+
+
 
 pygame.quit()
 quit()
