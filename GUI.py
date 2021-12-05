@@ -62,8 +62,11 @@ def upcard_deck(img):
 def place_hand(image_array):
     x, y = 10, 470
     for img in image_array:
-        screen.blit(img, (x, y))
-        x+=100
+        try:
+            screen.blit(img, (x, y))
+            x+=100
+        except:
+            pass
 
 def place_player_one(card_img):
     screen.blit(card_img, (550,170))
@@ -210,7 +213,7 @@ def update_sum(sum):
     screen.blit(sum_text, (550, 30))
 
 # Default Game
-current_player = 1
+
 image_array = [back_card_img, back_card_img, back_card_img, back_card_img, back_card_img, back_card_img]    
 cf = Cribbage.Crib_Functions()
 player_1 = Cribbage.Player("Player 1")
@@ -249,67 +252,81 @@ first = second = third = fourth = fifth = sixth = crib_use =  True
 array_one = get_player_images(1)
 array_two = get_player_images(2)
 
+current_player = 0
+crib_img = []
+
 while not crashed:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             crashed = True
         elif event.type == MOUSEBUTTONDOWN:
+            mx, my = pygame.mouse.get_pos()
+            loc = [mx, my]
             default_screen()
-            if current_player%2 == 0:
-                if current_player < 3:
-                    board_scoring(0, 0)
-                else:
-                    board_scoring(1, player_1.get_score())
-                    board_scoring(2, player_2.get_score())
-                place_hand(array_two)
-                player_turn(2)
-                update_text(1, player_1.get_score())
-                update_text(2, player_2.get_score())
-                update_sum(0)
-            else:
-                if current_player < 3:
-                    board_scoring(0, 0)
-                else:
-                    board_scoring(1, player_1.get_score())
-                    board_scoring(2, player_2.get_score())
-                place_hand(array_one)
+            board_scoring(1, player_1.get_score())
+            board_scoring(2, player_2.get_score())
+            place_hand(array_one)
+            update_text(1, player_1.get_score())
+            update_text(2, player_2.get_score())
+            # board_scoring(1, player_1.get_score())
+            # board_scoring(2, player_2.get_score())
+            update_sum(0)
+            if current_player == 0:
                 player_turn(1)
-                update_text(1, player_1.get_score())
-                update_text(2, player_2.get_score())
-                # board_scoring(1, player_1.get_score())
-                # board_scoring(2, player_2.get_score())
-                update_sum(0)
-            current_player += 1
-            if event.type == MOUSEBUTTONDOWN: 
-                mx, my = pygame.mouse.get_pos()
-                loc = [mx, my]
-                if event.button == 1: 
-                    clicking == True 
-                    print(loc) 
-                    
-                    if mx > 10 and mx < 175 and my > 10 and my < 240:
-                        current_player -= 1 
-                        cut_deck(array_two[2])
-                        # flip deck
-                        # upcard_deck(img)
-                        # update scoring
-                    elif my > 475 and my < 702:
-                        if  mx > 14 and mx < 114:
-                            print("First card")
-                        elif mx > 114 and mx < 214:
-                            print("Second card")
-                        elif mx > 214 and mx < 310:
-                            print("Third card")
-                        elif mx > 310 and mx < 410:
-                            print("Fourth card")
-                        elif mx > 410 and mx < 508:
-                            print("Fifth card")
-                        elif mx > 508 and mx < 680:
-                            print("Sixth card")
+                empty_crib() 
+                cut_deck(array_one[2])
+                current_player+=1
+            elif current_player > 0:
+                if my > 475 and my < 702:
+                    if  mx > 14 and mx < 114:
+                            number = 0
+                    elif mx > 114 and mx < 214:
+                        print("Second card")
+                        number = 1
+                    elif mx > 214 and mx < 310:
+                        print("Third card")
+                        number = 2
+                    elif mx > 310 and mx < 410:
+                        print("Fourth card")
+                        number = 3
+                    elif mx > 410 and mx < 508:
+                        print("Fifth card")
+                        number = 4
+                    elif mx > 508 and mx < 680:
+                        print("Sixth card")
+                        number = 5
+                    # crib play
+                    if current_player <= 4:
+                        empty_crib() 
+                        if current_player >= 2:
+                            place_player_two(back_card_img)
+                            place_player_one(back_card_img)
+                        if current_player % 2 == 0:
+                            player_turn(2)
+                            crib_img.append(array_two[number])
+                            array_two[number] = ''
+                            array_two.remove('')
                         else:
-                            pass
-                else: 
-                    pass 
+                            player_turn(1)
+                            crib_img.append(array_one[number])
+                            place_player_one(back_card_img)
+                            array_one[number] = ''
+                            array_one.remove('')
+                    else:
+                        if current_player % 2 == 0:
+                            player_turn(2)
+                            crib_img.append(array_two[number])
+                            array_two[number] = ''
+                            array_two.remove('')
+                        else:
+                            player_turn(1)
+                            crib_img.append(array_one[number])
+                            place_player_one(array_one[number])
+                            array_one[number] = ''
+                            array_one.remove('')
+                    current_player+=1     
+            else:
+                pass      
     pygame.display.update()
 
 pygame.quit()
